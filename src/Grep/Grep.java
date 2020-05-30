@@ -21,39 +21,38 @@ public class Grep {
         this.file = file;
     }
 
-    public static ArrayList<String> found =  new ArrayList();
+    private ArrayList<String> found = new ArrayList();
+
 
     public ArrayList<String> grep() throws IOException {
 
+        Pattern pattern = null;
+        String currentFilter = null;
+        if (flagR) {
+            if (flagI) pattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+            else pattern = Pattern.compile(filter);
+        } else if (flagI) currentFilter = filter.toLowerCase();
+        else currentFilter = filter;
+
         found.clear();
 
-        String currentFilter = filter;
         BufferedReader fin = new BufferedReader(new FileReader(file));
         String line;
-        Pattern pattern = Pattern.compile(currentFilter);
         try (fin) {
             while ((line = fin.readLine()) != null) {
-                Matcher matcher;
+
                 String checkLine = line;
+                if (flagI) { checkLine = checkLine.toLowerCase(); }
 
-                if (flagI) {
-                    currentFilter = filter.toLowerCase();
-                    pattern = Pattern.compile(currentFilter);
-                    checkLine = checkLine.toLowerCase();
-                }
+                if (pattern != null) {
+                    Matcher matcher = pattern.matcher(checkLine);
+                    if (flagV) {
+                        if (!matcher.find()) found.add(line);
+                    } else if (matcher.find()) found.add(line);
 
-                if (!flagR) {
-                    pattern.quote(currentFilter);
-                }
-
-                matcher = pattern.matcher(checkLine);
-
-                if (flagV) {
-                    if (!matcher.find()) {found.add(line);}
-                }
-                else {
-                    if (matcher.find()) {found.add(line);}
-                }
+                } else if (flagV) {
+                    if (!checkLine.contains(currentFilter)) found.add(line);
+                } else if (checkLine.contains(currentFilter)) found.add(line);
             }
         }
         return found;
