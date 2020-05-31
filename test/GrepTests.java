@@ -64,5 +64,6 @@ public class GrepTests {
         grepResult =
                 new Grep(false, true, true, ".{1,}[f]", "testResources/test8.txt").grep();
         assertEquals(trueLine, grepResult);
+
     }
 }
