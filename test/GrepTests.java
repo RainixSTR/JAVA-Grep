@@ -65,5 +65,11 @@ public class GrepTests {
                 new Grep(false, true, true, ".{1,}[f]", "testResources/test8.txt").grep();
         assertEquals(trueLine, grepResult);
 
+        trueLine.clear();
+        trueLine.add("FoRtiFication is very bad");
+        grepResult =
+                new Grep(false, true, true, ".{1,}[I]", "testResources/test8.txt").grep();
+        assertEquals(trueLine, grepResult);
+
     }
 }

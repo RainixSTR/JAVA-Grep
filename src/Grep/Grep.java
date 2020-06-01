@@ -21,18 +21,20 @@ public class Grep {
         this.file = file;
     }
 
-    ArrayList<String> found = new ArrayList();
-
     public ArrayList<String> grep() throws IOException {
+
+        ArrayList<String> found = new ArrayList();
+
+        String currentFilter = filter;
 
         Pattern pattern;
 
-        if (flagI)
-            pattern = Pattern.compile(filter.toLowerCase(), Pattern.UNICODE_CASE & Pattern.CASE_INSENSITIVE);
-        else
-            pattern = Pattern.compile(filter);
+        if (!flagR) currentFilter = Pattern.quote(currentFilter);
 
-        if (!flagR) pattern = Pattern.compile(Pattern.quote(pattern.toString()));
+        if (flagI)
+            pattern = Pattern.compile(currentFilter, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+        else
+            pattern = Pattern.compile(currentFilter);
 
         found.clear();
 
@@ -42,17 +44,11 @@ public class Grep {
         try (fin) {
             while ((line = fin.readLine()) != null) {
                 Matcher matcher;
-                if (flagI) {
-                    matcher = pattern.matcher(line.toLowerCase());
-                } else {
-                    matcher = pattern.matcher(line);
-                }
+                matcher = pattern.matcher(line);
                 if (flagV && !matcher.find()) found.add(line);
                 if (!flagV && matcher.find()) found.add(line);
             }
-
         }
         return found;
-
     }
 }
